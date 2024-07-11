@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"google.golang.org/grpc"
 	"net"
+	"server/internal/cache"
+	"server/internal/domain/models"
 	"server/internal/grpc/ex00"
 )
 
@@ -14,8 +16,8 @@ type App struct {
 
 func New(port int) *App {
 	gRPCServer := grpc.NewServer()
-
-	ex00.Register(gRPCServer)
+	cacheMem := cache.New[*models.MeanStd](100)
+	ex00.Register(gRPCServer, cacheMem)
 
 	return &App{
 		gRPCServer: gRPCServer,

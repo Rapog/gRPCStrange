@@ -13,7 +13,7 @@ service Ex00{
 
 message ConnectResponse{
   string session_id = 1;
-  double frequency = 2; // Норм распределение чего-то там
+  double frequency = 2;
   google.protobuf.Timestamp time = 3;
 }
 

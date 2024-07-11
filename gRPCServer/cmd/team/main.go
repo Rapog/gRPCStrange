@@ -11,7 +11,9 @@ import (
 func main() {
 
 	log.Printf("starting")
-	application := app.New(8080)
+	application := app.New(8888)
+
+	//cacheMem := cache.New(10)
 
 	go application.GRPCSrv.MustRun()
 
