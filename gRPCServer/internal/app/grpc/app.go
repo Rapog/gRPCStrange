@@ -16,7 +16,7 @@ type App struct {
 
 func New(port int) *App {
 	gRPCServer := grpc.NewServer()
-	cacheMem := cache.New[*models.MeanStd](100)
+	cacheMem := cache.New[*models.MeanStd](10)
 	ex00.Register(gRPCServer, cacheMem)
 
 	return &App{

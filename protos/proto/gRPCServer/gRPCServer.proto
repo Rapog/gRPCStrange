@@ -5,6 +5,7 @@ package ex00;
 option go_package = "goteam1.team00.v1;team00v1";
 
 import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
 
 service Ex00{
   rpc Connect (google.protobuf.Empty) returns (ConnectResponse);
@@ -13,8 +14,7 @@ service Ex00{
 message ConnectResponse{
   string session_id = 1;
   double frequency = 2; // Норм распределение чего-то там
-  double mean = 3;
-  double stddev =4;
+  google.protobuf.Timestamp time = 3;
 }
 
 //protoc -I proto proto/gRPCServer/gRPCServer.proto --go_out=./gen/go --go_opt=paths=source_relative -go-grpc_out=./gen/go --go_grpc_opt=paths=source_relative

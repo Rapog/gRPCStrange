@@ -1,6 +1,8 @@
 package cache
 
-import "sync"
+import (
+	"sync"
+)
 
 type Cache[T any] interface {
 	Set(key string, value T)
@@ -19,18 +21,22 @@ func (c *cache[T]) Set(key string, value T) {
 	defer c.mu.Unlock()
 
 	c.data[key] = value
+
+	//log.Println("Set: ", key)
 }
 
 func (c *cache[T]) Get(key string) T {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
+	//log.Println("Get: ", key)
 	return c.data[key]
 }
 
 func (c *cache[T]) Delete(key string) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
+	//log.Println("Delete: ", key)
 	delete(c.data, key)
 }
 
@@ -39,10 +45,12 @@ func (c *cache[T]) Has(key string) bool {
 	defer c.mu.Unlock()
 
 	_, ok := c.data[key]
+	//log.Println("Has: ", key, " ok: ", ok)
 	return ok
 }
 
 func New[T any](cap int) Cache[T] {
+	//log.Println("New: ", cap)
 	return &cache[T]{
 		mu:   sync.Mutex{},
 		data: make(map[string]T, cap),

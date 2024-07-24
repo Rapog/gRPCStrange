@@ -48,6 +48,8 @@ func (s stream) Stream(ctx context.Context, sessionId string) (*models.SrvStream
 	//
 	//freq := mean + std*rand.NormFloat64()
 	//fmt.Printf("freq: %v\n", freq)
+	source := rand.NewSource(time.Now().UnixNano())
+	r := rand.New(source)
 
 	if s.Cache.Has(sessionId) {
 		res := s.Cache.Get(sessionId)
@@ -55,7 +57,7 @@ func (s stream) Stream(ctx context.Context, sessionId string) (*models.SrvStream
 		//log.Println("STD: ", res.Std)
 		return &models.SrvStream{
 			SessionId: sessionId,
-			Frequency: res.Mean + res.Std*rand.NormFloat64(),
+			Frequency: res.Mean + res.Std*r.NormFloat64(),
 			Time:      time.Now().UTC(),
 		}, nil
 	} else {
@@ -63,15 +65,16 @@ func (s stream) Stream(ctx context.Context, sessionId string) (*models.SrvStream
 			Mean: -10 + rand.Float64()*20,
 			Std:  0.3 + rand.Float64()*1.2,
 		}
-		s.Cache.Set(sessionId, newMeanStd)
-
-		log.Println("MeanFirst: ", newMeanStd.Mean)
-		log.Println("STDFirst: ", newMeanStd.Std)
+		if !s.Cache.Has(sessionId) {
+			s.Cache.Set(sessionId, newMeanStd)
+		}
+		log.Println("MeanFirst: ", sessionId, " ---- ", newMeanStd.Mean)
+		log.Println("STDFirst : ", sessionId, " ---- ", newMeanStd.Std)
 
 		return &models.SrvStream{
 			SessionId: sessionId,
-			Frequency: newMeanStd.Mean + newMeanStd.Std*rand.NormFloat64(),
-			Time:      time.Now(),
+			Frequency: newMeanStd.Mean + newMeanStd.Std*r.NormFloat64(),
+			Time:      time.Now().UTC(),
 		}, nil
 	}
 }

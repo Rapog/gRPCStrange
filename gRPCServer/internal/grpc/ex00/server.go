@@ -24,8 +24,7 @@ func Register(gRPC *grpc.Server, cache cache.Cache[*models.MeanStd]) {
 }
 
 func (s *serverAPI) Connect(emp *emptypb.Empty, cnct team00v1.Ex00_ConnectServer) error {
-	cche := cache.New[*models.MeanStd](10)
-	s.streamService = srvStream.NewStrmPrvder(cche)
+	s.streamService = srvStream.NewStrmPrvder(s.Cache)
 	ctx := context.Background()
 
 	model := &models.SrvStream{}
@@ -34,18 +33,20 @@ func (s *serverAPI) Connect(emp *emptypb.Empty, cnct team00v1.Ex00_ConnectServer
 	connectUuid := connectionUuid.String()
 
 	for {
+		//go func() {
 		model, _ = s.streamService.Stream(ctx, connectUuid)
 		err := cnct.Send(&team00v1.ConnectResponse{
 			SessionId: model.SessionId,
 			Frequency: model.Frequency,
 			Time:      timestamppb.New(model.Time),
 		})
+		//fmt.Println(model.Frequency)
 		//fmt.Println(model)
 		if err != nil {
 			cnct.SendMsg("Error: SendConnectionResponse: " + err.Error())
-			break
 		}
 		time.Sleep(1 * time.Second)
+		//}()
 	}
 
 	//fmt.Printf(model.SessionId)
@@ -59,5 +60,4 @@ func (s *serverAPI) Connect(emp *emptypb.Empty, cnct team00v1.Ex00_ConnectServer
 	//	Frequency: 1.123,
 	//	Time:      timestamppb.New(time.Now().UTC()),
 	//}, nil
-	return nil
 }
